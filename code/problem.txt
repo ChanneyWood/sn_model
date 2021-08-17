@@ -1,0 +1,17 @@
+1.event_dict_with_time_satisfy_add_index.csv retweet num smaller than retweet_content_sheet_1.csv real retweet num.
+such as hashtag 46, 64<128
+                198, 63<126
+
+2.some original_user_id in origin_content_join_all.csv is not in user2user.csv which will cause some subgraphs lack
+of nodes.
+
+关注关系：
+    user2user.txt
+    follow_user_all 所有在关注关系中出现过的节点
+origin_tweet2user_dict 原创博文与用户id的对应关系
+
+真实转发数量和收集得到的有大量不匹配：
+有些图：30000-> 30
+有些图：300-> 30
+
+把图做成增量图，sc_num也做成增量
