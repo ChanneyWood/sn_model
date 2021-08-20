@@ -5,11 +5,15 @@
 # @Email   : wycmglq@outlook.com
 # @File    : 32build_rel_graph.py
 # @Do      : something
+import sys
+sys.path.append('../')
 import dgl
 import joblib
 import numpy as np
 import torch
 from tqdm import tqdm
+from utils import *
+
 
 # slice_retweet_num_sample = joblib.load("slice_retweet_num_sample.txt")
 # slice_retweet_data_sample = joblib.load("slice_retweet_data_sample.txt")
@@ -65,7 +69,8 @@ def build_retweet_graph(slice_retweet_data):
 all_nodes = []
 rel_graph_dict_full = []
 for event_idx, slice_retweet_data in enumerate(tqdm(slice_retweet_data_all)):
-    rel_graph_dict_full.append(build_retweet_graph(slice_retweet_data))
+    acc_slice_data = change_graph_to_acc(slice_retweet_data)
+    rel_graph_dict_full.append(build_retweet_graph(acc_slice_data))
 joblib.dump(rel_graph_dict_full, path + "rel_graph_dict_full")
 all_nodes_idx = list(set(all_nodes))
 outf = open(path + "all_nodes_idx.txt", 'w')

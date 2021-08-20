@@ -18,6 +18,11 @@ event_originId_list = joblib.load(path + "event_originId_list")
 slice_sc_num_all = []
 for idx, slice_retweet_num in enumerate(slice_retweet_num_all):
     n = sum(slice_retweet_num)
-    slice_sc_num_all.append([math.ceil(c * sc_num_list[idx] / n + 1) for c in slice_retweet_num])
+    sc_list = []
+    sc_acc = 0  # accumulated social concern num
+    for re_num in slice_retweet_num:
+        sc_acc += math.ceil(re_num * sc_num_list[idx] / n)
+        sc_list.append(sc_acc)
+    slice_sc_num_all.append(sc_list)
 print(0)
 joblib.dump(slice_sc_num_all, path + "slice_sc_num_all")

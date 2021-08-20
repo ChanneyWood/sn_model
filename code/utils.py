@@ -11,6 +11,7 @@ import numpy as np
 import datetime
 import scipy.sparse as sp
 from math import log
+import copy
 
 import torch
 
@@ -191,3 +192,14 @@ def tensor_id_map_func(tensor_id, id_map):
     new_id_list = [[id_map.index(item[0])] for item in new_id_list]
     return torch.Tensor(new_id_list).type(torch.int64)
 
+
+#  change graph to accumulated
+#  input:time_slice type:list size:7
+def change_graph_to_acc(slice_data):
+    new_slice = []
+    acc_data = []
+    for one_slice in slice_data:
+        acc_data.extend(one_slice)
+        append_data = copy.deepcopy(acc_data)
+        new_slice.append(append_data)
+    return new_slice
