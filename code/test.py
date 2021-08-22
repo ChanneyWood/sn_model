@@ -60,13 +60,13 @@ import pickle
 # outf.close()
 
 import dgl
-#
-# node_idx = [0, 1, 2]
-# g = dgl.DGLGraph()
-# # g.add_nodes(len(node_idx))
-# # g.add_edges([0, 0, 1, 2], [1, 1, 0, 0])
-# nodes = g.num_nodes()
-# print(0)
+
+node_idx = [0, 1, 2]
+g = dgl.DGLGraph()
+g.add_nodes(len(node_idx))
+g.add_edges([0, 0, 1, 2], [1, 1, 0, 0])
+nodes = g.num_nodes()
+print(0)
 from tqdm import tqdm
 path = "../data/middle_data/"
 # tweet2id = joblib.load(path + "origin_tweet2user_dict")
@@ -90,14 +90,17 @@ path = "../data/middle_data/"
 # idx = l.index(0)
 # print(0)
 
-rel_g_list = joblib.load(path + "rel_graph_dict_sample")
-event_list = rel_g_list[:5]
-g_list = [item for slice in event_list for item in slice]
-batched_g = dgl.batch(g_list)
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-batched_g = batched_g.to(device)
-id_list = batched_g.ndata['id']
-nodes_map = joblib.load(path + "all_nodes_idx")
-new_ilist = id_list.cpu().numpy().tolist()
-new_ilist = [[nodes_map.index(item[0])] for item in new_ilist]
-print(0)
+# rel_g_list = joblib.load(path + "rel_graph_dict_sample")
+# event_list = rel_g_list[:5]
+# g_list = [item for slice in event_list for item in slice]
+# batched_g = dgl.batch(g_list)
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# batched_g = batched_g.to(device)
+# id_list = batched_g.ndata['id']
+# nodes_map = joblib.load(path + "all_nodes_idx")
+# new_ilist = id_list.cpu().numpy().tolist()
+# new_ilist = [[nodes_map.index(item[0])] for item in new_ilist]
+# print(0)
+
+loss = 210.0
+print('save better model, loss={}'.format(str(loss)))

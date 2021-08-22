@@ -25,7 +25,7 @@ class grsce(nn.Module):
         # self.graph_dict = None
 
         out_feat = int(h_dim // 2)
-        self.g_aggr = GCN(h_dim, out_feat, h_dim, 1, F.relu, dropout)
+        self.g_aggr = GCN(1, out_feat, h_dim, 1, F.relu, dropout)
         # self.wg_aggr = GCN(100, h_dim, h_dim, 2, F.relu, dropout)
         # if attn == 'add':
         #     self.attn = Attention(h_dim, 'add')
@@ -56,8 +56,8 @@ class grsce(nn.Module):
     def forward(self, event_list, sc_num_list):
         pred, _ = self.__get_pred(event_list)
         pred = pred.reshape(-1, 1)
-        sc_num = [item[-1] for item in sc_num_list]
-        sc_num = torch.Tensor(sc_num).cuda().reshape(-1, 1)
+        # sc_num = [item[-1] for item in sc_num_list]
+        sc_num = torch.Tensor(sc_num_list).cuda().reshape(-1, 1)
         loss = self.criterion(pred, sc_num)
         return loss
 
@@ -78,12 +78,13 @@ class grsce(nn.Module):
 
 
         # t_list_len = sum(len_non_zero)
-        if torch.cuda.is_available():
-            feature = torch.cat((feature, torch.zeros(len(len_non_zero) - len(feature), feature.size(-1)).cuda()), dim=0)
-        else:
-            feature = torch.cat((feature, torch.zeros(len(len_non_zero) - len(feature), feature.size(-1))), dim=0)
+        # if torch.cuda.is_available():
+        #     feature = torch.cat((feature, torch.zeros(len(len_non_zero) - len(feature), feature.size(-1)).cuda()), dim=0)
+        # else:
+        #     feature = torch.cat((feature, torch.zeros(len(len_non_zero) - len(feature), feature.size(-1))), dim=0)
 
-        pred = self.linear_r(feature)
+        # pred = self.linear_r(feature)
+        pred = self.linear_r(output)
 
         return pred, feature
 
@@ -106,17 +107,18 @@ class grsce(nn.Module):
         batched_g = dgl.batch(g_list)
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         # 给图节点加入隐藏属性
-        map_id_tensor = tensor_id_map_func(batched_g.ndata['id'], self.node_map)
+        # map_id_tensor = tensor_id_map_func(batched_g.ndata['id'], self.node_map)
+        batched_g.ndata['h'] = torch.ones((batched_g.num_nodes(), 1))
         batched_g = batched_g.to(device)  # torch.device('cuda:0')
-        batched_g.ndata['h'] = self.nodes_embeds[map_id_tensor].view(-1, self.nodes_embeds.shape[1])
+        # batched_g.ndata['h'] = self.nodes_embeds[map_id_tensor].view(-1, self.nodes_embeds.shape[1])
         # # word graph
         # wg_list = [self.word_graph_dict[tim.item()] for tim in unique_t]
         # batched_wg = dgl.batch(wg_list)
         # batched_wg = batched_wg.to(device)
         # with torch.no_grad():
         #     batched_wg.ndata['h'] = self.word_embeds[batched_wg.ndata['id']].view(-1, self.word_embeds.shape[1])
-        bfnh = batched_g.ndata['h']
         batched_g.ndata['h'] = self.g_aggr(batched_g)
+        bfnh = batched_g.ndata['h']
         # batched_wg.ndata['h'] = self.wg_aggr(batched_wg)
         # word_ids_wg = batched_wg.ndata['id'].view(-1).cpu().tolist()
         # id_dict = dict(zip(word_ids_wg, list(range(len(word_ids_wg)))))
@@ -164,7 +166,7 @@ class grsce(nn.Module):
         # batched_g.ndata['h'] = output[:num_nodes].view(-1, self.h_dim)
 
         # 用每个batch中最大的节点嵌入表示图嵌入
-        global_node_info = dgl.sum_nodes(batched_g, 'h')
+        global_node_info = dgl.mean_nodes(batched_g, 'h')
         # if self.maxpool == 1:
         #     global_node_info = dgl.max_nodes(batched_g, 'h')
         #     # global_word_info = dgl.max_nodes(batched_wg, 'h')
@@ -189,8 +191,8 @@ class grsce(nn.Module):
     def predict(self, ent_list, sc_num_list):
         pred, feature = self.__get_pred(ent_list)
         pred = pred.reshape(-1, 1)
-        sc_num = [item[-1] for item in sc_num_list]
-        sc_num = torch.Tensor(sc_num).cuda().reshape(-1, 1)
+        # sc_num = [item[-1] for item in sc_num_list]
+        sc_num = torch.Tensor(sc_num_list).cuda().reshape(-1, 1)
         if sc_num is not None:
             loss = self.criterion(pred, sc_num)
         else:

@@ -79,9 +79,11 @@ while iterations < args.runs:
         # train_set = (s_rel_g[0:3000], s_word_g[0:3000], s_sc_num[0:3000])
         # valid_set = (s_rel_g[3000:4000], s_word_g[3000:4000], s_sc_num[3000:4000])
         # test_set = (s_rel_g[4000:], s_word_g[4000:], s_sc_num[4000:])
+
         train_set = (s_rel_g_list[0:3000], s_sc_num_list[0:3000])
         valid_set = (s_rel_g_list[3000:4000], s_sc_num_list[3000:4000])
         test_set = (s_rel_g_list[4000:], s_sc_num_list[4000:])
+
         # train_set = (s_rel_g_list[0:30], s_sc_num_list[0:30])
         # valid_set = (s_rel_g_list[30:40], s_sc_num_list[30:40])
         # test_set = (s_rel_g_list[40:], s_sc_num_list[40:])
@@ -194,8 +196,8 @@ while iterations < args.runs:
             total_loss += loss.item()
 
             # 自己写的保存模型代码
-            if i % 50 == 0:
-                print('save better model...')
+            if i % 749 == 0:
+                print('save better model, loss={}'.format(str(loss)))
                 torch.save({'state_dict': model.state_dict(), 'i': i, 'nodes_embeds': model.nodes_embeds},
                            model_state_file)
 
@@ -233,6 +235,7 @@ while iterations < args.runs:
     # except KeyboardInterrupt:
     #     print('-' * 80)
     #     print('Exiting from training early, epoch', epoch)
+
     checkpoint = torch.load(model_state_file, map_location=lambda storage, loc: storage)
     model.load_state_dict(checkpoint['state_dict'])
     model.nodes_embeds = checkpoint['nodes_embeds']
