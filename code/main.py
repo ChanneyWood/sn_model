@@ -24,13 +24,14 @@ from sklearn.metrics import roc_auc_score
 parser = argparse.ArgumentParser(description='')
 parser.add_argument("--dp", type=str, default="../data/middle_data/", help="data path")
 parser.add_argument("--dropout", type=float, default=0.5, help="dropout probability")
-parser.add_argument("--n-hidden", type=int, default=100, help="number of hidden units")
+parser.add_argument("--n-hidden-1", type=int, default=10, help="number of hidden units")
+parser.add_argument("--n-hidden-2", type=int, default=5, help="number of hidden units")
 parser.add_argument("--gpu", type=int, default=0, help="gpu")
-parser.add_argument("--lr", type=float, default=1e-1, help="learning rate")
-parser.add_argument("--weight_decay", type=float, default=1e-2, help="weight_decay")
+parser.add_argument(x, help="learning rate")
+parser.add_argument("--weight_decay", type=float, default=1e-4, help="weight_decay")
 parser.add_argument("-d", "--dataset", type=str, default='weibo', help="dataset to use")
 parser.add_argument("--grad-norm", type=float, default=1.0, help="norm to clip gradient to")
-parser.add_argument("--max-epochs", type=int, default=20, help="maximum epochs")
+parser.add_argument("--max-epochs", type=int, default=30, help="maximum epochs")
 parser.add_argument("--seq-len", type=int, default=8, help="reference days of training")
 parser.add_argument("--batch-size", type=int, default=4)
 parser.add_argument("--rnn-layers", type=int, default=1)
@@ -116,17 +117,19 @@ while iterations < args.runs:
         #     ent_map = pickle.load(f)
         # print('load word_event_map.txt')
 
-    model = grsce(h_dim=args.n_hidden, num_nodes=num_nodes,
+    model = grsce(h_dim_1=args.n_hidden_1,
+                  h_dim_2=args.n_hidden_2,
+                  num_nodes=num_nodes,
                   seq_len=args.seq_len,
-                  maxpool=args.maxpool,
                   dropout=args.dropout,
                   use_lstm=args.use_lstm,
                   attn=args.attn)
 
     model_name = model.__class__.__name__
     print('Model:', model_name)
-    token = 'acc_graph_{}_sl{}_max{}_list{}_attn{}'.format(model_name, args.seq_len, int(args.maxpool), int(args.use_lstm),
-                                                 str(args.attn))
+    token = 'acc_graph_{}_sl{}_max{}_list{}_attn{}'.format(model_name, args.seq_len, int(args.maxpool),
+                                                           int(args.use_lstm),
+                                                           str(args.attn))
     print('Token:', token, args.dataset)
 
     # optimizer = torch.optim.SGD(
@@ -168,13 +171,8 @@ while iterations < args.runs:
             total_loss += loss.item()
 
         print('{} results'.format(set_name))
-        # prec, rec, f1, _ = precision_recall_fscore_support(y_true, y_pred, average="binary")
-        # auc = roc_auc_score(y_true, y_score)
-        # hloss, recall, f1, f2 = utils.print_eval_metrics(true_rank_l, prob_rank_l)
-        data_loader_len = dataset_loader.len
         reduced_loss = total_loss / (dataset_loader.len / 1.0)
         print("{} Loss: {:.6f}".format(set_name, reduced_loss))
-        # return hloss, recall, f1, f2
         return reduced_loss
 
 
@@ -182,7 +180,6 @@ while iterations < args.runs:
         model.train()
         total_loss = 0
         t0 = time.time()
-        loss_small = float("inf")
         for i, batch in enumerate(tqdm(data_loader)):
             rel_g, sc_num = batch
             # batch_data = torch.stack(batch_data, dim=0)
@@ -195,12 +192,6 @@ while iterations < args.runs:
             optimizer.zero_grad()
             total_loss += loss.item()
 
-            # 自己写的保存模型代码
-            if i % 749 == 0:
-                print('save better model, loss={}'.format(str(loss)))
-                torch.save({'state_dict': model.state_dict(), 'i': i, 'nodes_embeds': model.nodes_embeds},
-                           model_state_file)
-
         t2 = time.time()
         reduced_loss = total_loss / (dataset_loader.len / args.batch_size)
         print("Epoch {:04d} | Loss {:.6f} | time {:.2f} {}".format(
@@ -210,38 +201,36 @@ while iterations < args.runs:
 
     bad_counter = 0
     loss_small = float("inf")
-    # try:
-    #     print("start training...")
-    #     for epoch in range(1, args.max_epochs + 1):
-    #         train_loss = train(train_loader, train_dataset_loader)
-    #
-    #         # evaluate(train_eval_loader, train_dataset_loader, set_name='Train') # eval on train set
-    #         # valid_loss, recall, f1, f2 = evaluate(
-    #         #     valid_loader, valid_dataset_loader, set_name='Valid')  # eval on valid set
-    #         #
-    #         # if valid_loss < loss_small:
-    #         #     loss_small = valid_loss
-    #         #     bad_counter = 0
-    #         #     print('save better model...')
-    #         #     torch.save({'state_dict': model.state_dict(), 'epoch': epoch, 'global_emb': None}, model_state_file)
-    #         #     # evaluate(test_loader, test_dataset_loader, set_name='Test')
-    #         # else:
-    #         #     bad_counter += 1
-    #         # if bad_counter == args.patience:
-    #         #     break
-    #
-    #     print("training done")
-    #
-    # except KeyboardInterrupt:
-    #     print('-' * 80)
-    #     print('Exiting from training early, epoch', epoch)
+    try:
+        print("start training...")
+        for epoch in range(1, args.max_epochs + 1):
+            train_loss = train(train_loader, train_dataset_loader)
 
-    checkpoint = torch.load(model_state_file, map_location=lambda storage, loc: storage)
-    model.load_state_dict(checkpoint['state_dict'])
-    model.nodes_embeds = checkpoint['nodes_embeds']
-    if use_cuda:
-        model.cuda()
-    evaluate(train_loader, train_dataset_loader, set_name='Valid')
+            valid_loss = evaluate(valid_loader, valid_dataset_loader, set_name='Valid')  # eval on train set
+
+            if valid_loss < loss_small:
+                loss_small = valid_loss
+                bad_counter = 0
+                print('save better model, loss={}'.format(str(loss_small)))
+                torch.save({'state_dict': model.state_dict()},
+                           model_state_file)
+                evaluate(test_loader, test_dataset_loader, set_name='Test')
+            else:
+                bad_counter += 1
+            # if bad_counter == args.patience:
+            #     break
+
+        print("training done")
+
+    except KeyboardInterrupt:
+        print('-' * 80)
+        print('Exiting from training early, epoch', epoch)
+
+    # checkpoint = torch.load(model_state_file, map_location=lambda storage, loc: storage)
+    # model.load_state_dict(checkpoint['state_dict'])
+    # if use_cuda:
+    #     model.cuda()
+    # evaluate(train_loader, train_dataset_loader, set_name='Valid')
 
     # # Load the best saved model.
     # print("\nstart testing...")

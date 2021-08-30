@@ -61,12 +61,12 @@ import pickle
 
 import dgl
 
-node_idx = [0, 1, 2]
-g = dgl.DGLGraph()
-g.add_nodes(len(node_idx))
-g.add_edges([0, 0, 1, 2], [1, 1, 0, 0])
-nodes = g.num_nodes()
-print(0)
+# node_idx = [0, 1, 2]
+# g = dgl.DGLGraph()
+# g.add_nodes(len(node_idx))
+# g.add_edges([0, 0, 1, 2], [1, 1, 0, 0])
+# nodes = g.num_nodes()
+# print(0)
 from tqdm import tqdm
 path = "../data/middle_data/"
 # tweet2id = joblib.load(path + "origin_tweet2user_dict")
@@ -102,5 +102,8 @@ path = "../data/middle_data/"
 # new_ilist = [[nodes_map.index(item[0])] for item in new_ilist]
 # print(0)
 
-loss = 210.0
-print('save better model, loss={}'.format(str(loss)))
+pred = [1,2,4,5]
+pred = torch.Tensor(pred)
+pred = pred.reshape(-1, 1)
+pred = pred.reshape(-1).tolist()
+print(0)
