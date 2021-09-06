@@ -27,7 +27,7 @@ parser.add_argument("--dropout", type=float, default=0.5, help="dropout probabil
 parser.add_argument("--n-hidden-1", type=int, default=10, help="number of hidden units")
 parser.add_argument("--n-hidden-2", type=int, default=5, help="number of hidden units")
 parser.add_argument("--gpu", type=int, default=0, help="gpu")
-parser.add_argument(x, help="learning rate")
+parser.add_argument("--lr", type=float, default=1e-3, help="learning rate")
 parser.add_argument("--weight_decay", type=float, default=1e-4, help="weight_decay")
 parser.add_argument("-d", "--dataset", type=str, default='weibo', help="dataset to use")
 parser.add_argument("--grad-norm", type=float, default=1.0, help="norm to clip gradient to")
@@ -65,7 +65,6 @@ while iterations < args.runs:
     if iterations == 1:
         print("loading data...")
         rel_g_list = joblib.load(args.dp + "rel_graph_dict_full")
-        # word_g_list = joblib.load(args.dp + "word_graph_dict_full")
         sc_num_list = joblib.load(args.dp + "slice_sc_num_all")
         nodes_map = joblib.load(args.dp + "all_nodes_idx")
         num_nodes = len(nodes_map)
@@ -74,7 +73,6 @@ while iterations < args.runs:
         s_idx = s_idx.tolist()
         np.random.shuffle(s_idx)
         s_rel_g_list = [rel_g_list[idx] for idx in s_idx]
-        # s_word_g_list = [word_g_list[idx] for idx in s_idx]
         s_sc_num_list = [sc_num_list[idx] for idx in s_idx]
 
         # train_set = (s_rel_g[0:3000], s_word_g[0:3000], s_sc_num[0:3000])
@@ -89,10 +87,6 @@ while iterations < args.runs:
         # valid_set = (s_rel_g_list[30:40], s_sc_num_list[30:40])
         # test_set = (s_rel_g_list[40:], s_sc_num_list[40:])
 
-        # with open('{}{}/100.w_emb'.format(args.dp, args.dataset), 'rb') as f:
-        #     word_embeds = pickle.load(f, encoding="latin1")
-        # word_embeds = torch.FloatTensor(word_embeds)
-
         train_dataset_loader = DistData(
             train_set, set_name='train')
         valid_dataset_loader = DistData(
@@ -106,16 +100,6 @@ while iterations < args.runs:
                                   shuffle=False, collate_fn=collate_2)
         test_loader = DataLoader(test_dataset_loader, batch_size=1,
                                  shuffle=False, collate_fn=collate_2)
-
-        # with open(args.dp + args.dataset + '/dg_dict.txt', 'rb') as f:
-        #     graph_dict = pickle.load(f)
-        # print('load dg_dict.txt')
-        # with open(args.dp + args.dataset + '/wg_dict_truncated.txt', 'rb') as f:
-        #     word_graph_dict = joblib.load(f)
-        # print('load wg_dict_truncated.txt')
-        # with open(args.dp + args.dataset + '/word_event_map.txt', 'rb') as f:
-        #     ent_map = pickle.load(f)
-        # print('load word_event_map.txt')
 
     model = grsce(h_dim_1=args.n_hidden_1,
                   h_dim_2=args.n_hidden_2,
@@ -146,16 +130,8 @@ while iterations < args.runs:
     outf = 'models/{}/{}.result'.format(args.dataset, token)
     if use_cuda:
         model.cuda()
-        # word_embeds = word_embeds.cuda()
 
     model.node_map = nodes_map
-
-
-    # model.word_embeds = word_embeds
-
-    # model.graph_dict = graph_dict
-    # model.word_graph_dict = word_graph_dict
-    # model.ent_map = ent_map
 
     @torch.no_grad()
     def evaluate(data_loader, dataset_loader, set_name='valid'):
@@ -163,11 +139,7 @@ while iterations < args.runs:
         total_loss = 0
         for i, batch in enumerate(tqdm(data_loader)):
             rel_g, sc_num = batch
-            # batch_data = torch.stack(batch_data, dim=0)
-            # true_r = torch.stack(true_r, dim=0)
             loss = model.evaluate(rel_g, sc_num)
-            # true_rank_l.append(true_rank.cpu().tolist())
-            # prob_rank_l.append(prob_rank.cpu().tolist())
             total_loss += loss.item()
 
         print('{} results'.format(set_name))
@@ -182,8 +154,6 @@ while iterations < args.runs:
         t0 = time.time()
         for i, batch in enumerate(tqdm(data_loader)):
             rel_g, sc_num = batch
-            # batch_data = torch.stack(batch_data, dim=0)
-            # true_r = torch.stack(true_r, dim=0)
             loss = model(rel_g, sc_num)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(

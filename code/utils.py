@@ -203,3 +203,14 @@ def change_graph_to_acc(slice_data):
         append_data = copy.deepcopy(acc_data)
         new_slice.append(append_data)
     return new_slice
+
+def change_df_to_acc(slice_data):
+    new_slice = []
+    for idx, one_slice in enumerate(slice_data):
+        if idx == 0:
+            acc_data = one_slice
+        else:
+            acc_data = acc_data.append(one_slice)
+        append_data = copy.deepcopy(acc_data)
+        new_slice.append(append_data)
+    return new_slice

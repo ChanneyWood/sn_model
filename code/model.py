@@ -119,11 +119,11 @@ class grsce(nn.Module):
         embed_seq_tensor = self.dropout(embed_seq_tensor)
         return embed_seq_tensor, len_non_zero
 
-    def predict(self, ent_list, sc_num_list):
+    def predict(self, ent_list):
         pred, feature = self.__get_pred(ent_list)
-        loss = self.get_loss(pred, sc_num_list)
-        return loss, pred, feature
+        return pred, feature
 
     def evaluate(self, ent_list, sc_num):
-        loss, pred, _ = self.predict(ent_list, sc_num)
+        pred, _ = self.predict(ent_list)
+        loss = self.get_loss(pred, sc_num)
         return loss
