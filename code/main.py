@@ -66,6 +66,8 @@ while iterations < args.runs:
         print("loading data...")
         rel_g_list = joblib.load(args.dp + "rel_graph_dict_full")
         sc_num_list = joblib.load(args.dp + "slice_sc_num_all")
+        # rel_g_list = joblib.load(args.dp + "rel_graph_dict_sample")
+        # sc_num_list = joblib.load(args.dp + "slice_sc_num_sample")
         nodes_map = joblib.load(args.dp + "all_nodes_idx")
         num_nodes = len(nodes_map)
         data_len = len(sc_num_list)
@@ -74,10 +76,6 @@ while iterations < args.runs:
         np.random.shuffle(s_idx)
         s_rel_g_list = [rel_g_list[idx] for idx in s_idx]
         s_sc_num_list = [sc_num_list[idx] for idx in s_idx]
-
-        # train_set = (s_rel_g[0:3000], s_word_g[0:3000], s_sc_num[0:3000])
-        # valid_set = (s_rel_g[3000:4000], s_word_g[3000:4000], s_sc_num[3000:4000])
-        # test_set = (s_rel_g[4000:], s_word_g[4000:], s_sc_num[4000:])
 
         train_set = (s_rel_g_list[0:3000], s_sc_num_list[0:3000])
         valid_set = (s_rel_g_list[3000:4000], s_sc_num_list[3000:4000])
@@ -106,12 +104,11 @@ while iterations < args.runs:
                   num_nodes=num_nodes,
                   seq_len=args.seq_len,
                   dropout=args.dropout,
-                  use_lstm=args.use_lstm,
-                  attn=args.attn)
+                  use_lstm=args.use_lstm)
 
     model_name = model.__class__.__name__
     print('Model:', model_name)
-    token = 'acc_graph_{}_sl{}_max{}_list{}_attn{}'.format(model_name, args.seq_len, int(args.maxpool),
+    token = 'based_num_pred_{}_sl{}_max{}_list{}_attn{}'.format(model_name, args.seq_len, int(args.maxpool),
                                                            int(args.use_lstm),
                                                            str(args.attn))
     print('Token:', token, args.dataset)

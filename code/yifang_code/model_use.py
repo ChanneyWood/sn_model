@@ -1,4 +1,6 @@
 import argparse
+import math
+
 import numpy as np
 import time
 import utils
@@ -12,14 +14,14 @@ import torch
 from torch.utils.data import DataLoader
 
 parser = argparse.ArgumentParser(description='')
-parser.add_argument("--dp", type=str, default="../data/yifang/", help="data path")
+parser.add_argument("--dp", type=str, default="../../data/yifang/", help="data path")
 parser.add_argument("--dropout", type=float, default=0.5, help="dropout probability")
 parser.add_argument("--n-hidden-1", type=int, default=10, help="number of hidden units")
 parser.add_argument("--n-hidden-2", type=int, default=5, help="number of hidden units")
 parser.add_argument("--gpu", type=int, default=0, help="gpu")
 parser.add_argument("--lr", type=float, default=1e-3, help="learning rate")
 parser.add_argument("--weight_decay", type=float, default=1e-4, help="weight_decay")
-parser.add_argument("-d", "--dataset", type=str, default='weibo', help="dataset to use")
+parser.add_argument("-d", "--dataset", type=str, default='weibo/9.6', help="dataset to use")
 parser.add_argument("--grad-norm", type=float, default=1.0, help="norm to clip gradient to")
 parser.add_argument("--max-epochs", type=int, default=30, help="maximum epochs")
 parser.add_argument("--seq-len", type=int, default=8, help="reference days of training")
@@ -61,8 +63,7 @@ model = grsce(h_dim_1=args.n_hidden_1,
               num_nodes=num_nodes,
               seq_len=args.seq_len,
               dropout=args.dropout,
-              use_lstm=args.use_lstm,
-              attn=args.attn)
+              use_lstm=args.use_lstm)
 
 
 @torch.no_grad()
@@ -70,20 +71,18 @@ def evaluate(data_loader, dataset_loader, set_name='valid'):
     model.eval()
     for i, batch in enumerate(tqdm(data_loader)):
         rel_g, sc_num = batch
-        pred, _ = model.predict(rel_g)
-        pred = pred.tolist()[0][0]
-        pred_sc = sc_num[0][-1]*(1+math.fabs(pred))
+        pred, _ = model.predict(rel_g, sc_num)
+        pred = float(pred.squeeze())
+        pred_sc = math.ceil(sc_num[0][-1]*(1+math.fabs(pred)))
         print(pred_sc)
 
 
 model_name = model.__class__.__name__
 print('Model:', model_name)
-token = 'acc_graph_{}_sl{}_max{}_list{}_attn{}'.format(model_name, args.seq_len, int(args.maxpool),
-                                                       int(args.use_lstm),
-                                                       str(args.attn))
+token = 'based_num_pred_without_graph_grsce_sl8_max1_list1_attn'
 print('Token:', token, args.dataset)
 
-model_state_file = 'models/{}/{}.pth'.format(args.dataset, token)
+model_state_file = ',,/models/{}/{}.pth'.format(args.dataset, token)
 checkpoint = torch.load(model_state_file, map_location=lambda storage, loc: storage)
 model.load_state_dict(checkpoint['state_dict'])
 if use_cuda:

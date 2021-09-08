@@ -9,18 +9,14 @@ import math
 
 
 class grsce(nn.Module):
-    def __init__(self, h_dim_1, h_dim_2, num_nodes, seq_len, dropout, use_lstm=1, attn=''):
+    def __init__(self, h_dim_1, h_dim_2, num_nodes, seq_len, dropout, use_lstm=1):
         super().__init__()
         self.h_dim_1 = h_dim_1
         self.h_dim_2 = h_dim_2
         self.num_nodes = num_nodes
         self.seq_len = seq_len
-        # self.maxpool = maxpool
         self.dropout = nn.Dropout(dropout)
         self.use_lstm = use_lstm
-        # self.nodes_embeds = nn.Parameter(torch.Tensor(num_nodes, h_dim))
-
-        self.node_map = None
 
         # out_feat = int(h_dim // 2)
         # self.g_aggr = GCN(1, out_feat, h_dim, 1, F.relu, dropout)
@@ -31,10 +27,14 @@ class grsce(nn.Module):
         else:
             self.encoder = nn.GRU(h_dim_2, h_dim_2, batch_first=True)
 
-        self.linear_r = nn.Linear(h_dim_2, 1, bias=True)
+        self.num_encoder = nn.LSTM(1, h_dim_2, batch_first=True, bidirectional=False)
+
+        self.linear_r_1 = nn.Linear(h_dim_2, 1, bias=True)
+        self.linear_r_2 = nn.Linear(h_dim_2, 1, bias=True)
 
         self.threshold = 0.5
-        self.out_func = torch.sigmoid
+        self.out_func_1 = torch.sigmoid
+        self.out_func_2 = torch.sigmoid
         self.criterion = nn.MSELoss(reduce=True, size_average=True)
         self.init_weights()
 
@@ -47,7 +47,7 @@ class grsce(nn.Module):
                 p.data.uniform_(-stdv, stdv)
 
     def forward(self, event_list, sc_num_list):
-        pred, _ = self.__get_pred(event_list)
+        pred, _ = self.__get_pred(event_list, sc_num_list)
         loss = self.get_loss(pred, sc_num_list)
         return loss
 
@@ -62,24 +62,28 @@ class grsce(nn.Module):
         loss = self.criterion(pred, sc_num)
         return loss
 
-    def __get_pred(self, event_list):
+    def __get_pred(self, event_list, sc_num_list):
         embed_seq_tensor, len_non_zero = self.aggregator(event_list)
         # packed_input = torch.nn.utils.rnn.pack_padded_sequence(embed_seq_tensor,
         #                                                        len_non_zero,
         #                                                        batch_first=True)
-        packed_input = embed_seq_tensor.reshape((len(len_non_zero), len_non_zero[0], 5))
+        packed_input = embed_seq_tensor.reshape((len(len_non_zero), len_non_zero[0], self.h_dim_2))
         if self.use_lstm:
             # lstm返回值为out, (h, c)
             output, (feature, _) = self.encoder(packed_input)
         else:
             # rnn,gru返回值为out, h
             output, feature = self.encoder(packed_input)
-        output = output.data
         feature = feature.squeeze(0)
+        graph_pred = self.linear_r_1(feature)
+        graph_pred = self.out_func_1(graph_pred)
 
-        pred = self.linear_r(feature)
-        # pred = self.linear_r(output)
-
+        num_input = torch.Tensor(sc_num_list).cuda()
+        num_input = num_input.unsqueeze(2)
+        _, (num_lstm_feature, _) = self.num_encoder(num_input)
+        num_pred = self.linear_r_2(num_lstm_feature)
+        num_pred = self.out_func_2(num_pred)
+        pred = 0.5*graph_pred + 0.5*num_pred
         return pred, feature
 
     def aggregator(self, event_list):
@@ -119,11 +123,11 @@ class grsce(nn.Module):
         embed_seq_tensor = self.dropout(embed_seq_tensor)
         return embed_seq_tensor, len_non_zero
 
-    def predict(self, ent_list):
-        pred, feature = self.__get_pred(ent_list)
+    def predict(self, ent_list, sc_num):
+        pred, feature = self.__get_pred(ent_list, sc_num)
         return pred, feature
 
     def evaluate(self, ent_list, sc_num):
-        pred, _ = self.predict(ent_list)
+        pred, _ = self.predict(ent_list, sc_num)
         loss = self.get_loss(pred, sc_num)
         return loss

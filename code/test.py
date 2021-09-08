@@ -102,8 +102,7 @@ path = "../data/middle_data/"
 # new_ilist = [[nodes_map.index(item[0])] for item in new_ilist]
 # print(0)
 
-pred = [1,2,4,5]
+pred = [[[1,2,4,5]]]
 pred = torch.Tensor(pred)
-pred = pred.reshape(-1, 1)
-pred = pred.reshape(-1).tolist()
+pred = pred.squeeze()
 print(0)
