@@ -9,14 +9,14 @@ import math
 
 
 class grsce(nn.Module):
-    def __init__(self, h_dim_1, h_dim_2, num_nodes, seq_len, dropout, use_lstm=1):
+    def __init__(self, h_dim_1, h_dim_2, seq_len, dropout, use_lstm, scalar):
         super().__init__()
         self.h_dim_1 = h_dim_1
         self.h_dim_2 = h_dim_2
-        self.num_nodes = num_nodes
         self.seq_len = seq_len
         self.dropout = nn.Dropout(dropout)
         self.use_lstm = use_lstm
+        self.scalar = scalar
 
         # out_feat = int(h_dim // 2)
         # self.g_aggr = GCN(1, out_feat, h_dim, 1, F.relu, dropout)
@@ -54,19 +54,16 @@ class grsce(nn.Module):
     def get_loss(self, pred, sc_num_list):
         pred = pred.reshape(-1, 1)
         epsilon = 1e-5
-        # 手动去前面数据为0的话题 如：[0,0,0,0,0,0,0,17300]
-        # sc_num_list = [item[-1] / item[-2] - 1 + epsilon for item in sc_num_list]
-        # sc_num = [item[-1] / item[-2] - 1 + epsilon for item in sc_num_list]
-        sc_num = [1 - item[-2] / item[-1] + epsilon for item in sc_num_list]
+        sc_num = [item[-1] for item in sc_num_list]
         sc_num = torch.Tensor(sc_num).cuda().reshape(-1, 1)
         loss = self.criterion(pred, sc_num)
         return loss
 
     def __get_pred(self, event_list, sc_num_list):
+        rel = self.graph_num_rel(event_list, sc_num_list)
+        rel = rel.cuda()
+        rel = rel.unsqueeze(1)
         embed_seq_tensor, len_non_zero = self.aggregator(event_list)
-        # packed_input = torch.nn.utils.rnn.pack_padded_sequence(embed_seq_tensor,
-        #                                                        len_non_zero,
-        #                                                        batch_first=True)
         packed_input = embed_seq_tensor.reshape((len(len_non_zero), len_non_zero[0], self.h_dim_2))
         if self.use_lstm:
             # lstm返回值为out, (h, c)
@@ -76,14 +73,17 @@ class grsce(nn.Module):
             output, feature = self.encoder(packed_input)
         feature = feature.squeeze(0)
         graph_pred = self.linear_r_1(feature)
+        graph_pred = torch.mul(graph_pred, rel)
         graph_pred = self.out_func_1(graph_pred)
 
         num_input = torch.Tensor(sc_num_list).cuda()
+        num_input = num_input[:, :-1]
         num_input = num_input.unsqueeze(2)
         _, (num_lstm_feature, _) = self.num_encoder(num_input)
+        num_lstm_feature = num_lstm_feature.squeeze(0)
         num_pred = self.linear_r_2(num_lstm_feature)
-        num_pred = self.out_func_2(num_pred)
-        pred = 0.5*graph_pred + 0.5*num_pred
+        # num_pred = self.out_func_2(num_pred)
+        pred = 0.2*graph_pred + 0.8*num_pred
         return pred, feature
 
     def aggregator(self, event_list):
@@ -105,10 +105,9 @@ class grsce(nn.Module):
         batched_g = batched_g.to(device)  # torch.device('cuda:0')
         feat = torch.ones(batched_g.num_nodes(), self.h_dim_1).cuda()
         batched_g.ndata['h'] = self.g_aggr(batched_g, feat)
-        bfnh = batched_g.ndata['h']
 
         # 用每个batch中最大的节点嵌入表示图嵌入
-        global_node_info = dgl.mean_nodes(batched_g, 'h')
+        global_node_info = dgl.sum_nodes(batched_g, 'h')
 
         embed_seq_tensor = torch.zeros(len(len_non_zero), self.seq_len, 1 * self.h_dim_2)
         if torch.cuda.is_available():
@@ -131,3 +130,17 @@ class grsce(nn.Module):
         pred, _ = self.predict(ent_list, sc_num)
         loss = self.get_loss(pred, sc_num)
         return loss
+
+    def graph_num_rel(self, ent_list, sc_num):
+        batch_len = len(sc_num)
+        seq_len = len(sc_num[0])
+        rel = []
+        for b in range(batch_len):
+            batch_rel = []
+            for s in range(seq_len):
+                batch_rel.append(sc_num[b][s] * self.scalar / ent_list[b][s].num_nodes())
+            batch_rel = np.mean(batch_rel)
+            rel.append(batch_rel)
+        rel = torch.Tensor(rel)
+        return rel
+

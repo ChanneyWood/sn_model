@@ -1,0 +1,54 @@
+C:\Users\ll200\miniconda3\envs\python3.6\python.exe C:/Users/ll200/PycharmProjects/sn_model/code/main.py
+Using backend: pytorch
+Namespace(attn='', batch_size=4, dataset='weibo', date='9.15', dp='../data/middle_data/', dropout=0.5, gpu=0, grad_norm=1.0, lr=0.005, max_epochs=5, maxpool=1, n_hidden_1=10, n_hidden_2=5, patience=5, rnn_layers=1, runs=1, seed=42, seq_len=8, use_lstm=1, weight_decay=0.001)
+cuda True
+****************** iterations  1
+loading data...
+Model: grsce
+Token: loss_graph_num_gap_grsce_sl8 weibo
+#params: 467
+  0%|          | 0/750 [00:00<?, ?it/s]start training...
+100%|██████████| 750/750 [00:41<00:00, 17.92it/s]
+  0%|          | 0/1000 [00:00<?, ?it/s]Epoch 0001 | Loss 0.002805 | time 41.85 Wed Sep 15 09:38:09 2021
+100%|██████████| 1000/1000 [00:14<00:00, 71.00it/s]
+  0%|          | 0/1205 [00:00<?, ?it/s]Valid results
+Valid Loss: 0.000397
+save better model, loss=0.00039721883268045575
+100%|██████████| 1205/1205 [00:16<00:00, 72.08it/s]
+  0%|          | 0/750 [00:00<?, ?it/s]Test results
+Test Loss: 0.000275
+100%|██████████| 750/750 [00:38<00:00, 19.59it/s]
+Epoch 0002 | Loss 0.000384 | time 38.30 Wed Sep 15 09:39:18 2021
+100%|██████████| 1000/1000 [00:13<00:00, 76.50it/s]
+  0%|          | 0/750 [00:00<?, ?it/s]Valid results
+Valid Loss: 0.000467
+100%|██████████| 750/750 [00:38<00:00, 19.51it/s]
+  0%|          | 0/1000 [00:00<?, ?it/s]Epoch 0003 | Loss 0.000242 | time 38.44 Wed Sep 15 09:40:09 2021
+100%|██████████| 1000/1000 [00:12<00:00, 78.76it/s]
+  0%|          | 0/1205 [00:00<?, ?it/s]Valid results
+Valid Loss: 0.000307
+save better model, loss=0.00030745982578491413
+100%|██████████| 1205/1205 [00:15<00:00, 78.11it/s]
+  0%|          | 0/750 [00:00<?, ?it/s]Test results
+Test Loss: 0.000196
+100%|██████████| 750/750 [00:38<00:00, 19.55it/s]
+  0%|          | 0/1000 [00:00<?, ?it/s]Epoch 0004 | Loss 0.000141 | time 38.37 Wed Sep 15 09:41:16 2021
+100%|██████████| 1000/1000 [00:12<00:00, 77.94it/s]
+  0%|          | 0/1205 [00:00<?, ?it/s]Valid results
+Valid Loss: 0.000269
+save better model, loss=0.00026898001037884713
+100%|██████████| 1205/1205 [00:15<00:00, 78.26it/s]
+Test results
+Test Loss: 0.000174
+100%|██████████| 750/750 [00:38<00:00, 19.53it/s]
+  0%|          | 0/1000 [00:00<?, ?it/s]Epoch 0005 | Loss 0.000123 | time 38.40 Wed Sep 15 09:42:22 2021
+100%|██████████| 1000/1000 [00:12<00:00, 77.06it/s]
+  0%|          | 0/1205 [00:00<?, ?it/s]Valid results
+Valid Loss: 0.000162
+save better model, loss=0.00016161101248624742
+100%|██████████| 1205/1205 [00:15<00:00, 77.62it/s]
+Test results
+Test Loss: 0.000090
+training done
+
+Process finished with exit code 0

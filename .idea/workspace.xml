@@ -2,15 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c6453d1c-f9b9-4a9a-a5f4-49aa0e3ba2bc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/code/models/result/9_6_num_and_graph.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/code/models/result/9_6_without_graph.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/code/models/result/9_6_without_num.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/code/yifang_code/pred_sc_num.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code/couple_gnn/model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code/models/result/9_13_all.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code/models/result/9_13_graph_out.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code/models/result/9_13_num.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code/models/result/9_14_graph_num.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code/models/result/9_15_graph_output_num.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code/models/result/9_8_num_and_graph.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code/models/result/9_8_num_and_graph_sample.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code/models/result/9_8_without_graph.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code/models/result/9_8_without_num.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/model_use.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/yifang_code/model_use.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -126,23 +131,26 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../work" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ll200\PycharmProjects\sn_model\code\models\result" />
+      <recent name="C:\Users\ll200\PycharmProjects\sn_model\code\couple_gnn" />
       <recent name="C:\Users\ll200\PycharmProjects\sn_model" />
       <recent name="C:\Users\ll200\PycharmProjects\sn_model\data" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ll200\PycharmProjects\sn_model\code\models\weibo\9.8" />
       <recent name="C:\Users\ll200\PycharmProjects\sn_model\code\yifang_code" />
       <recent name="C:\Users\ll200\PycharmProjects\sn_model\code\models\weibo\9.6" />
       <recent name="C:\Users\ll200\PycharmProjects\sn_model\code\models\result\9.6" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.model_use">
+  <component name="RunManager" selected="Python.main">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="sn_model" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -262,11 +270,11 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.model_use" />
-        <item itemvalue="Python.pred_sc_num" />
-        <item itemvalue="Python.test" />
         <item itemvalue="Python.main" />
         <item itemvalue="Python.model" />
+        <item itemvalue="Python.test" />
+        <item itemvalue="Python.model_use" />
+        <item itemvalue="Python.pred_sc_num" />
       </list>
     </recent_temporary>
   </component>
@@ -282,7 +290,7 @@
       <option name="presentableId" value="Default" />
       <updated>1627874098262</updated>
       <workItem from="1630296947373" duration="26871000" />
-      <workItem from="1630911934223" duration="19345000" />
+      <workItem from="1630911934223" duration="53119000" />
     </task>
     <servers />
   </component>
@@ -375,8 +383,8 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/sn_model$01get_follow_rel.coverage" NAME="01get_follow_rel Coverage Results" MODIFIED="1630320886484" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/pre_code" />
     <SUITE FILE_PATH="coverage/sn_model$pre_process.coverage" NAME="pre_process Coverage Results" MODIFIED="1630420308285" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/yifang_code" />
-    <SUITE FILE_PATH="coverage/sn_model$model.coverage" NAME="model Coverage Results" MODIFIED="1630913875255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
-    <SUITE FILE_PATH="coverage/sn_model$test.coverage" NAME="test Coverage Results" MODIFIED="1630999433313" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
+    <SUITE FILE_PATH="coverage/sn_model$test.coverage" NAME="test Coverage Results" MODIFIED="1631516588569" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
+    <SUITE FILE_PATH="coverage/sn_model$model.coverage" NAME="model Coverage Results" MODIFIED="1631608248490" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
     <SUITE FILE_PATH="coverage/sn_model$model_use.coverage" NAME="model_use Coverage Results" MODIFIED="1631001460027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
     <SUITE FILE_PATH="coverage/sn_model$32build_rel_graph.coverage" NAME="32build_rel_graph Coverage Results" MODIFIED="1630324753208" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/pre_code" />
     <SUITE FILE_PATH="coverage/sn_model$40get_slice_social_concern_num.coverage" NAME="40get_slice_social_concern_num Coverage Results" MODIFIED="1630324999470" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/pre_code" />
@@ -384,8 +392,8 @@
     <SUITE FILE_PATH="coverage/sn_model$02get_origin_tweet2user_dict.coverage" NAME="02get_origin_tweet2user_dict Coverage Results" MODIFIED="1630320941144" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/pre_code" />
     <SUITE FILE_PATH="coverage/sn_model$20process.coverage" NAME="20process Coverage Results" MODIFIED="1630321191391" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/pre_code" />
     <SUITE FILE_PATH="coverage/sn_model$31build_word_graph.coverage" NAME="31build_word_graph Coverage Results" MODIFIED="1630324904564" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/pre_code" />
-    <SUITE FILE_PATH="coverage/sn_model$main.coverage" NAME="main Coverage Results" MODIFIED="1630978557238" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
     <SUITE FILE_PATH="coverage/sn_model$pred_sc_num.coverage" NAME="pred_sc_num Coverage Results" MODIFIED="1631000447952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/yifang_code" />
+    <SUITE FILE_PATH="coverage/sn_model$main.coverage" NAME="main Coverage Results" MODIFIED="1631669820215" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
     <SUITE FILE_PATH="coverage/sn_model$10get_real_social_concern_num.coverage" NAME="10get_real_social_concern_num Coverage Results" MODIFIED="1630321063121" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/pre_code" />
     <SUITE FILE_PATH="coverage/sn_model$03drop_hash_data.coverage" NAME="03drop_hash_data Coverage Results" MODIFIED="1630321002840" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/pre_code" />
   </component>

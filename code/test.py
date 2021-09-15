@@ -102,7 +102,14 @@ path = "../data/middle_data/"
 # new_ilist = [[nodes_map.index(item[0])] for item in new_ilist]
 # print(0)
 
-pred = [[[1,2,4,5]]]
-pred = torch.Tensor(pred)
-pred = pred.squeeze()
-print(0)
+# pred = [[[1,2,4,5]]]
+# pred = torch.Tensor(pred)
+# pred = pred.squeeze()
+# print(0)
+
+import matplotlib.pyplot as plt
+x = [1,2,3,4]
+y = [0.5, 0.05, 0.005, 0.0005]
+plt.plot(x,y)
+plt.show()
+print(list(range(1,31)))
